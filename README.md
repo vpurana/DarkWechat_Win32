@@ -1,4 +1,7 @@
 # DarkWechat_Win32
+
+注意需要配置MinHook
+
 仅适用于旧版本的wechat，实测为2.8.0.133
 新版本不知道什么时候开始Hook gdi相关的api失去效果了。
 

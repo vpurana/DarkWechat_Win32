@@ -15,3 +15,5 @@
 新版本不知道什么时候开始Hook gdi相关的api失去效果了。
 
 本项目仅供学习交流使用
+
+正确使用的效果图：![WeChat Screenshot_20240505105539](https://github.com/vpurana/DarkWechat_Win32/assets/69775280/9a468dc4-5ce0-478c-9d77-c45390475909)

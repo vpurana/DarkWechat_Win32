@@ -10,7 +10,7 @@
 
 可以通过修改TrashHook.cpp文件中的FOREGOUND_COLOR和BACKGOUND_COLOR实现配色变化
 
-提供一个可以适配的微信版本https://soft-10-1.xiaoguaniu.com/soft/202112/WX_V3.4.5.45_XiTongZhiJia.zip?time=1714873884&ip=113.57.176.205&secret=f3985716e9f83fd40702e5dad14cef80
+提供一个可以适配的微信版本https://www.pcsoft.com.cn/soft/15638.html
 
 请注意若提示缺少相应的dll，这是正常的，因为这是debug模式的编译，不知道为什么MinHook package的Release编译不能通过，你可以找到这些文件或者安装带有v141编译器的vs
 

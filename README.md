@@ -17,4 +17,5 @@
 本项目仅供学习交流使用
 
 正确使用的效果图：
+
 ![WeChat Screenshot_20240505105539](https://github.com/vpurana/DarkWechat_Win32/assets/69775280/f958dd8d-f2db-4855-b802-b932feb4c01d)

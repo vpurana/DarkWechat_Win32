@@ -20,6 +20,6 @@
 
 正确使用的效果图：
 
-![WeChat Screenshot_20240505105539](https://github.com/vpurana/DarkWechat_Win32/assets/69775280/f958dd8d-f2db-4855-b802-b932feb4c01d)
+<img width="299" alt="WeChat Screenshot_20240516192424" src="https://github.com/vpurana/DarkWechat_Win32/assets/69775280/94cf38f5-5989-4a4b-9c70-68f5f024fa0e">
 
 VS背景图作者：翼@Tsubasachyan

@@ -12,18 +12,18 @@
 
 using namespace Gdiplus;
 
-#pragma comment(lib,"libMinHook-x86-v141-md.lib")
+#pragma comment(lib,"../packages/minhook.1.3.3/lib/native/lib/libMinHook-x86-v141-md.lib")
 #pragma comment (lib,"Gdiplus.lib")
 #pragma comment(lib,"Msimg32.lib")
 
-#define FOREGOUND_COLOR RGB(255, 0, 255)
-#define BACKGOUND_COLOR RGB(0, 0, 0)
+constexpr COLORREF FOREGOUND_COLOR = RGB(255, 31, 31);
+constexpr COLORREF BACKGOUND_COLOR = RGB(0, 0, 0);
 
 #define COLORREF2RGB(Color) (Color & 0xff00) | ((Color >> 16) & 0xff) \
                                  | ((Color << 16) & 0xff0000)
 
 __declspec(noinline)
-HBITMAP ReplaceColor(HBITMAP hBmp, COLORREF cOldColor, COLORREF cNewColor, HDC hBmpDC, Rect* lpRect)
+HBITMAP ReplaceColor(HBITMAP hBmp, HDC hBmpDC, Rect* lpRect)
 {
 
 	HBITMAP RetBmp = NULL;
@@ -60,13 +60,68 @@ HBITMAP ReplaceColor(HBITMAP hBmp, COLORREF cOldColor, COLORREF cNewColor, HDC h
 			HGDIOBJ PreviousObject = SelectObject(DirectDC, DirectBitmap);
 			BitBlt(DirectDC, 0, 0, bm.bmWidth, bm.bmHeight, hBmpDC, 0, 0, SRCCOPY);
 
-			cOldColor = COLORREF2RGB(cOldColor);
-			cNewColor = COLORREF2RGB(cNewColor);
-
 			for (int i = ((bm.bmWidth * bm.bmHeight) - 1); i >= 0; i--)
 			{
-				cOldColor = COLORREF2RGB(ptPixels[i]);
-				if (ptPixels[i]) ptPixels[i] = cNewColor;
+				if (ptPixels[i]) 
+				{
+
+#define GetAValue(rgb)      (LOBYTE((rgb)>>24))
+					UINT refOldColor = ptPixels[i];
+					COLORREF cOldColor = COLORREF2RGB(refOldColor);
+					USHORT trawr = GetRValue(refOldColor);
+					USHORT trawg = GetGValue(refOldColor);
+					USHORT trawb = GetBValue(refOldColor);
+					USHORT trawa = GetAValue(refOldColor);
+					if (trawa == 0xff)
+					{
+						switch (cOldColor)
+						{
+						case 0x00FFFFFF:
+						case 0x009eea6a:
+							//ptPixels[i] = 0xFF2F0000;
+							//break;
+						default:
+							USHORT ulightness = trawr + trawg + trawb;
+							if (ulightness > 255)
+							{
+								USHORT calculightess = 255 - ulightness / 3;
+								INT converted_r = 255 - GetRValue(cOldColor);
+								INT converted_g = 255 - GetGValue(cOldColor);
+								INT converted_b = 255 - GetBValue(cOldColor);
+								COLORREF cNewColor = 0xFF000000;
+								cNewColor += (calculightess << 16);
+
+								ptPixels[i] = cNewColor;
+							}
+						break;
+						}
+					}
+					else if (trawa >= 0x10)
+					{
+						USHORT ulightness = trawr + trawg + trawb;
+						
+						{
+							USHORT calculightess = 255 - ulightness / 3;
+							INT converted_r = 255 - GetRValue(cOldColor);
+							INT converted_g = 255 - GetGValue(cOldColor);
+							INT converted_b = 255 - GetBValue(cOldColor);
+							COLORREF cNewColor = 0xFF000000;
+							cNewColor += (calculightess << 16);
+
+							ptPixels[i] = 0xFFFF0000;
+						}
+					}
+					else
+					{
+						continue;
+					}
+					/*INT converted_r = 255 - GetRValue(cOldColor);
+					INT converted_g = 255 - GetGValue(cOldColor);
+					INT converted_b = 255 - GetBValue(cOldColor);
+					cNewColor = RGB(converted_r, converted_g, converted_b);
+					ptPixels[i] = cNewColor;*/
+
+				}
 			}
 
 			SelectObject(DirectDC, PreviousObject);
@@ -167,7 +222,7 @@ BOOL __stdcall MyAlphaBlend(HDC hdcDest, int xoriginDest, int yoriginDest, int w
 	
 	Rect srcRect{ xoriginSrc, yoriginSrc, wSrc, hSrc };
 	HBITMAP hBmp = reinterpret_cast<HBITMAP>(GetCurrentObject(hdcSrc, OBJ_BITMAP));
-	HBITMAP nBitmap = ReplaceColor(hBmp, 0, RGB(0, 0, 255), hdcSrc, &srcRect);
+	HBITMAP nBitmap = ReplaceColor(hBmp, hdcSrc, &srcRect);
 	/*for (int ecx = xoriginSrc; ecx < wSrc + xoriginSrc; ++ecx)
 	{
 		for (int ecy = yoriginSrc; ecy < hSrc + yoriginSrc; ++ecy)
@@ -336,7 +391,6 @@ void SetHook()
 	mhStatus = MH_CreateHook(&CreateSolidBrush, &MyCreateSolidBrush, reinterpret_cast<void**>(&fpCreateSolidBrush));
 	mhStatus = MH_EnableHook(&CreateSolidBrush);
 	
-
 	mhStatus = MH_CreateHook(&CreatePen, &MyCreatePen, reinterpret_cast<void**>(&fpCreatePen));
 	mhStatus = MH_EnableHook(&CreatePen);
 
